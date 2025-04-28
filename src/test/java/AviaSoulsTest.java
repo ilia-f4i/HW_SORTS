@@ -16,45 +16,48 @@ public class AviaSoulsTest {
     @Test
     public void testSearchAndSortByPrice() {
         AviaSouls manager = new AviaSouls();
-        manager.add(new Ticket("Moscow", "London", 200, 10, 12));
-        manager.add(new Ticket("Moscow", "London", 100, 11, 13));
-        manager.add(new Ticket("Moscow", "Berlin", 150, 12, 14));
-        manager.add(new Ticket("Moscow", "London", 150, 14, 16));
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "London", 100, 11, 13);
+        Ticket t3 = new Ticket("Moscow", "Berlin", 150, 12, 14);
+        Ticket t4 = new Ticket("Moscow", "London", 150, 14, 16);
 
-        Ticket[] result = manager.search("Moscow", "London");
-        assertEquals(3, result.length);
-        assertEquals(100, result[0].getPrice());
-        assertEquals(150, result[1].getPrice());
-        assertEquals(200, result[2].getPrice());
+        manager.add(t1);
+        manager.add(t2);
+        manager.add(t3);
+        manager.add(t4);
+
+        Ticket[] expected = {t2, t4, t1};
+        assertArrayEquals(expected, manager.search("Moscow", "London"));
     }
 
     @Test
     public void testTicketTimeComparator() {
         TicketTimeComparator comparator = new TicketTimeComparator();
-        Ticket ticket1 = new Ticket("Moscow", "London", 200, 10, 12); // 2 часа
-        Ticket ticket2 = new Ticket("Moscow", "Paris", 150, 12, 15); // 3 часа
-        Ticket ticket3 = new Ticket("Moscow", "Berlin", 200, 14, 17); // 3 часа
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12); // 2 часа
+        Ticket t2 = new Ticket("Moscow", "Paris", 150, 12, 15); // 3 часа
+        Ticket t3 = new Ticket("Moscow", "Berlin", 200, 14, 17); // 3 часа
 
-        assertTrue(comparator.compare(ticket1, ticket2) < 0);
-        assertTrue(comparator.compare(ticket2, ticket1) > 0);
-        assertEquals(0, comparator.compare(ticket2, ticket3));
+        assertTrue(comparator.compare(t1, t2) < 0);
+        assertTrue(comparator.compare(t2, t1) > 0);
+        assertEquals(0, comparator.compare(t2, t3));
     }
 
     @Test
     public void testSearchAndSortByTime() {
         AviaSouls manager = new AviaSouls();
-        manager.add(new Ticket("Moscow", "London", 200, 10, 13)); // 3 часа
-        manager.add(new Ticket("Moscow", "London", 100, 11, 14)); // 3 часа
-        manager.add(new Ticket("Moscow", "Berlin", 150, 12, 14)); // 2 часа
-        manager.add(new Ticket("Moscow", "London", 150, 14, 17)); // 3 часа
-        manager.add(new Ticket("Moscow", "London", 120, 15, 16)); // 1 час
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 13); // 3 часа
+        Ticket t2 = new Ticket("Moscow", "London", 100, 11, 14); // 3 часа
+        Ticket t3 = new Ticket("Moscow", "London", 150, 14, 17); // 3 часа
+        Ticket t4 = new Ticket("Moscow", "London", 120, 15, 16); // 1 час
 
-        Ticket[] result = manager.searchAndSortBy("Moscow", "London", new TicketTimeComparator());
-        assertEquals(4, result.length);
-        assertEquals(120, result[0].getPrice());
-        assertEquals(200, result[1].getPrice());
-        assertEquals(100, result[2].getPrice());
-        assertEquals(150, result[3].getPrice());
+        manager.add(t1);
+        manager.add(t2);
+        manager.add(t3);
+        manager.add(t4);
+
+        Ticket[] expected = {t4, t1, t2, t3};
+        assertArrayEquals(expected,
+                manager.searchAndSortBy("Moscow", "London", new TicketTimeComparator()));
     }
 
     @Test
@@ -63,31 +66,44 @@ public class AviaSoulsTest {
         manager.add(new Ticket("Moscow", "London", 200, 10, 12));
         manager.add(new Ticket("Moscow", "Paris", 150, 12, 14));
 
-        Ticket[] result = manager.search("Moscow", "Berlin");
-        assertEquals(0, result.length);
+        assertArrayEquals(new Ticket[0], manager.search("Moscow", "Berlin"));
     }
+
+    @Test
+    public void testFindAllTickets() {
+        AviaSouls manager = new AviaSouls();
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "Paris", 150, 12, 14);
+
+        manager.add(t1);
+        manager.add(t2);
+
+        Ticket[] expected = {t1, t2};
+        assertArrayEquals(expected, manager.findAll());
+    }
+
     @Test
     public void testCompareToWhenFirstTicketIsCheaper() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 100, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "Paris", 200, 12, 14);
+        Ticket t1 = new Ticket("Moscow", "London", 100, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "Paris", 200, 12, 14);
 
-        assertEquals(-100, ticket1.compareTo(ticket2));
+        assertEquals(-100, t1.compareTo(t2));
     }
 
     @Test
     public void testCompareToWhenTicketsHaveSamePrice() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 150, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "Berlin", 150, 12, 14);
+        Ticket t1 = new Ticket("Moscow", "London", 150, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "Berlin", 150, 12, 14);
 
-        assertEquals(0, ticket1.compareTo(ticket2));
+        assertEquals(0, t1.compareTo(t2));
     }
 
     @Test
     public void testCompareToWhenFirstTicketIsMoreExpensive() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 300, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "Paris", 200, 12, 14);
+        Ticket t1 = new Ticket("Moscow", "London", 300, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "Paris", 200, 12, 14);
 
-        assertEquals(100, ticket1.compareTo(ticket2));
+        assertEquals(100, t1.compareTo(t2));
     }
 
     @Test
@@ -98,45 +114,40 @@ public class AviaSoulsTest {
 
     @Test
     public void testEqualsWithSameTickets() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 200, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "London", 200, 10, 12);
 
-        assertEquals(ticket1, ticket2);
+        assertEquals(t1, t2);
     }
 
     @Test
     public void testEqualsWithDifferentTickets() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 200, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "Paris", 200, 10, 12);
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "Paris", 200, 10, 12);
 
-        assertNotEquals(ticket1, ticket2);
+        assertNotEquals(t1, t2);
     }
 
     @Test
     public void testHashCodeForEqualTickets() {
-        Ticket ticket1 = new Ticket("Moscow", "London", 200, 10, 12);
-        Ticket ticket2 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t1 = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t2 = new Ticket("Moscow", "London", 200, 10, 12);
 
-        assertEquals(ticket1.hashCode(), ticket2.hashCode());
+        assertEquals(t1.hashCode(), t2.hashCode());
     }
 
     @Test
     public void testGetters() {
-        Ticket ticket = new Ticket("Moscow", "London", 200, 10, 12);
+        Ticket t = new Ticket("Moscow", "London", 200, 10, 12);
 
-        assertEquals("Moscow", ticket.getFrom());
-        assertEquals("London", ticket.getTo());
-        assertEquals(200, ticket.getPrice());
-        assertEquals(10, ticket.getTimeFrom());
-        assertEquals(12, ticket.getTimeTo());
+        assertArrayEquals(new Object[]{"Moscow", "London", 200, 10, 12},
+                new Object[]{t.getFrom(), t.getTo(), t.getPrice(), t.getTimeFrom(), t.getTimeTo()});
     }
 
     @Test
     public void testCompareToWithNull() {
         Ticket ticket = new Ticket("Moscow", "London", 200, 10, 12);
 
-        assertThrows(NullPointerException.class, () -> {
-            ticket.compareTo(null);
-        });
+        assertThrows(NullPointerException.class, () -> ticket.compareTo(null));
     }
 }
